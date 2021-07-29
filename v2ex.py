@@ -7,20 +7,31 @@ except:
     pass
 
 cookie = os.environ.get("cookie")
+TGBOTAPI = os.environ.get("TGBOTAPI")
+TGID = os.environ.get("TGID")
 result = '🏆V2EX签到姬🏆\n'
 
+def pushtg(data):
+    global TGBOTAPI
+    global TGID
+    requests.post(
+        'https://api.telegram.org/bot'+TGBOTAPI+'/sendMessage?chat_id='+TGID+'&text='+data)
+
+# 【BOTAPI】格式为123456:abcdefghi
+# 【TGID】格式为123456（人）或者-100123456（群组/频道）
+
+
 def run(*arg):
+    global cookie
+    global result
     msg = ""
     s = requests.Session()
-    s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 
-	Safari/537.36'})
+    s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'})
 
     # 获取签到的once
     url = "https://www.v2ex.com/mission/daily"
     headers = {
-        'Accept': 
-		'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=
-		0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'accept-encoding' : 'gzip, deflate, br',
         'accept-language' : 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
         'Cookie': cookie
@@ -28,10 +39,12 @@ def run(*arg):
     r = s.get(url, headers=headers, verify=False, timeout=120)
     # print(r.text)
     if '需要先登录' in r.text:
+        result += "Cookie已失效"
         msg = "cookie失效啦！！！！\n"
         pusher("V2EX  Cookie失效啦！！！", r.text[:200])
         return msg
     elif '每日登录奖励已领取' in r.text:
+        result += "今日登录奖励已领取"
         msg = '今天已经签到过啦！！！\n'
         return msg
     once = re.compile(r'once\=\d+').search(r.text)
@@ -52,13 +65,16 @@ def run(*arg):
     elif '登录' in sign.text:
         msg = "cookie失效啦！！！！\n"
         pusher("V2EX  Cookie失效啦！！！")
+        result += "Cookie已失效"
         return msg
     else:
         msg = '签到失败！\n'
         pusher("V2EX  签到失败！！！", sign.text[:200])
+        result += "签到失败"
     return msg
 
 def main(*arg):
+    global result
     msg = ""
     global cookie
     if "\\n" in cookie:
@@ -80,9 +96,11 @@ if __name__ == "__main__":
         print("----------V2EX开始尝试签到----------")
         main()
         print("----------V2EX签到执行完毕----------")
+        pushtg(result)
 
 def main_handler(event, context):
     if cookie:
         print("----------V2EX开始尝试签到----------")
         main()
         print("----------V2EX签到执行完毕----------")
+        pushtg(result)
