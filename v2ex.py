@@ -6,17 +6,21 @@ try:
 except:
     pass
 
-cookie = os.environ.get("cookie_v2ex")
+cookie = os.environ.get("cookie")
+result = '🏆V2EX签到姬🏆\n'
 
 def run(*arg):
     msg = ""
     s = requests.Session()
-    s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'})
+    s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 
+	Safari/537.36'})
 
     # 获取签到的once
     url = "https://www.v2ex.com/mission/daily"
     headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept': 
+		'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=
+		0.9',
         'accept-encoding' : 'gzip, deflate, br',
         'accept-language' : 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
         'Cookie': cookie
@@ -72,6 +76,12 @@ def main(*arg):
 
 
 if __name__ == "__main__":
+    if cookie:
+        print("----------V2EX开始尝试签到----------")
+        main()
+        print("----------V2EX签到执行完毕----------")
+
+def main_handler(event, context):
     if cookie:
         print("----------V2EX开始尝试签到----------")
         main()
